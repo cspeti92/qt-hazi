@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>DiscoveryWindow.qml</file>
+        <file>SerialPortConfig.qml</file>
+        <file>globalvars.js</file>
     </qresource>
 </RCC>

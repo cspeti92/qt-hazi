@@ -2,6 +2,8 @@ import QtQuick 2.4
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 
+
+
 Item {
     anchors.fill: parent
     objectName: "DiscoveryWindow"
@@ -13,6 +15,7 @@ Item {
     signal toggleBlue();
 
     property int margin: 10
+
 
     property color selectedColor : "grey"
 
@@ -87,9 +90,6 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
 
-
         }
-
     }
 }
-
