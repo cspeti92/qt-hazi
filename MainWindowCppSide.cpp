@@ -1,13 +1,15 @@
 #include <QQmlProperty>
 #include "MainWindowCppSide.h"
 #include <QtSerialPort/QSerialPort>
-
+#include <QQmlContext>
+#include <QQuickView>
+#include <QStringList>
 
 // További információ és példák a C++ - QML kapcsolatról:
 // http://doc.qt.io/qt-5/qtqml-cppintegration-interactqmlfromcpp.html
 
-MainWindowCppSide::MainWindowCppSide(QObject *rootObject)
-    : QObject(nullptr)
+MainWindowCppSide::MainWindowCppSide(QObject *rootObject,QQmlContext &qmlContext )
+    : QObject(nullptr),qmlCont(qmlContext)
 {
     if (!rootObject)
     {
@@ -50,6 +52,7 @@ MainWindowCppSide::MainWindowCppSide(QObject *rootObject)
     }
 
     qDebug() << "MainWindowCppSide inicializálva.";
+
 }
 
 
@@ -97,8 +100,10 @@ QQuickItem* MainWindowCppSide::findItemByName(QList<QObject*> nodes, const QStri
 /* Soros port kezelő függvények  */
 void MainWindowCppSide::readData()
 {
-    QByteArray data = serial->readAll();
+    QString data = serial->readAll();
     qDebug() << "Uj adat jött: "<<data;
+    logList.append(data);
+    qmlCont.setContextProperty(QStringLiteral("logModel"),QVariant::fromValue(logList));
 }
 
 void MainWindowCppSide::ledRedEntryHandler()
@@ -132,3 +137,4 @@ void MainWindowCppSide::ledOrangeEntryHandler()
     serial->write(string);
 
 }
+
