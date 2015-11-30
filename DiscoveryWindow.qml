@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 
@@ -36,7 +36,7 @@ Item {
         // 1. oszlop
 
         GroupBox {
-            //Layout.fillHeight: true
+            Layout.fillHeight: true
 
 
             ColumnLayout {
@@ -77,6 +77,26 @@ Item {
                     }
                 }
 
+                // Soros port log
+                ScrollView {
+                    anchors.top:greenCheckBox.bottom
+                    anchors.margins: margin
+                    Layout.fillHeight: true
+
+                    // Itt jön a tényleges lista.
+                    ListView {
+                        id: logHistoryList
+                        model: logModel
+                        delegate: Row {
+                            Text { text: modelData }
+                        }
+                        // Folyamatos scroll
+                        onCountChanged: {
+                            logHistoryList.currentIndex = logHistoryList.count - 1;
+                        }
+                    }
+                }
+
             }
         }
 
@@ -86,8 +106,6 @@ Item {
         {
             Layout.fillHeight: true
             Layout.fillWidth: true
-
-
         }
 
     }

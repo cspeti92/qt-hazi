@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    MainWindowCppSide mainWindowCppSide(engine.rootObjects()[0]);
+    MainWindowCppSide mainWindowCppSide(engine.rootObjects()[0],*engine.rootContext());
     Q_UNUSED(mainWindowCppSide);
 
     return app.exec();
