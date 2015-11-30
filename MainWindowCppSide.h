@@ -19,12 +19,13 @@ public:
     QStringList logList;
 
 public slots:
-    /** Esem√©nykezel≈ë a QML oldali addGreenEntry signalhoz. */
+    /** Esem??nykezel?°• a QML oldali signalokhoz. */
     void ledRedEntryHandler();
     void ledBlueEntryHandler();
     void ledOrangeEntryHandler();
     void ledGreenEntryHandler();
-
+    void ConfigSavedHandler();
+    void ConfigOpenedHandler();
 private slots:
     //void writeData(const QByteArray &data);
     void readData();
@@ -34,7 +35,9 @@ private:
     QQuickItem* findItemByName(QObject *rootObject, const QString& name);
     QQuickItem* findItemByName(QList<QObject*> nodes, const QString& name);
     QQuickItem* mainWindowObject;
-    QSerialPort *serial;
+    QQuickItem* SerialConfig;
+    QQuickItem* DiscoveryWindow;
+    QSerialPort* serial;
     QQmlContext &qmlCont;
 
 
