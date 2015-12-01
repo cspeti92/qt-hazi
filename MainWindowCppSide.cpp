@@ -4,12 +4,14 @@
 #include <QQmlContext>
 #include <QQuickView>
 #include <QStringList>
+#include "SerialCommunication.h"
+#include "Logger.h"
 
 // További információ és példák a C++ - QML kapcsolatról:
 // http://doc.qt.io/qt-5/qtqml-cppintegration-interactqmlfromcpp.html
 
-MainWindowCppSide::MainWindowCppSide(QObject *rootObject,QQmlContext &qmlContext )
-    : QObject(nullptr),qmlCont(qmlContext)
+MainWindowCppSide::MainWindowCppSide(QObject *rootObject,QQmlContext &qmlContext, SerialComm& sCom, Logger& log)
+    : QObject(nullptr),qmlCont(qmlContext), mainSerialComm(sCom),mainLogger(log)
 {
     if (!rootObject)
     {
@@ -25,23 +27,25 @@ MainWindowCppSide::MainWindowCppSide(QObject *rootObject,QQmlContext &qmlContext
     else
     {
         qDebug() << "MainWindowCppSide inicializálva.";
-        DiscoveryWindow = findItemByName("DiscoveryWindow");
-        if (!DiscoveryWindow)
+        discoveryWindowObject = findItemByName("DiscoveryWindow");
+        if (!discoveryWindowObject)
         {
             qDebug() << "Nem találom a DiscoveryWindow objektumot.";
         }
         else
         {
              qDebug() << "UI inicializálása kész!";
-             /* soros port konfig szignál bekötése */
-             connect(mainWindowObject,SIGNAL(configOpened()),this,SLOT(ConfigOpenedHandler()));
+             // soros port konfig szignál bekötése
+             connect(mainWindowObject,SIGNAL(configOpened()),this,SLOT(configOpenedHandler()));
+             //beállítjuk a main loggerét és serial commját, hogy később elérjük ezeket
+             mainSerialComm.setMainWindowToSerial(this);
+             mainLogger.setMainWindowToLogger(this);
+             //összekötjük őket egyből, hogy ne a SerialCommunicationből kelljen
+             connect(&mainSerialComm,&SerialComm::serialDataAvailable,&mainLogger,&Logger::LoggerProcessMsg);
         }
     }
 
-
-
 }
-
 
 QQuickItem* MainWindowCppSide::findItemByName(const QString& name)
 {
@@ -84,108 +88,20 @@ QQuickItem* MainWindowCppSide::findItemByName(QList<QObject*> nodes, const QStri
     return nullptr;
 }
 
-/* Soros port kezelő függvények  */
-void MainWindowCppSide::readData()
-{
-    QString data = serial->readAll();
-    qDebug() << "Uj adat jött: "<<data;
-    logList.append(data);
-    qmlCont.setContextProperty(QStringLiteral("logModel"),QVariant::fromValue(logList));
-}
 
-void MainWindowCppSide::ledRedEntryHandler()
-{
-    qDebug() << "MainWindowCppSide::ledRedEntryHandler()";
-    QByteArray string = "lr\r\n";
-    serial->write(string);
-
-}
-
-void MainWindowCppSide::ledBlueEntryHandler()
-{
-    qDebug() << "MainWindowCppSide::ledBlueEntryHandler()";
-    QByteArray string = "lb\r\n";
-    serial->write(string);
-
-}
-
-void MainWindowCppSide::ledGreenEntryHandler()
-{
-    qDebug() << "MainWindowCppSide::ledGreenEntryHandler()";
-    QByteArray string = "lg\r\n";
-    serial->write(string);
-
-}
-
-void MainWindowCppSide::ledOrangeEntryHandler()
-{
-    qDebug() << "MainWindowCppSide::ledGreenEntryHandler()";
-    QByteArray string = "lo\r\n";
-    serial->write(string);
-
-}
-
-void MainWindowCppSide::ConfigOpenedHandler()
+void MainWindowCppSide::configOpenedHandler()
 {
     qDebug() << "Config opened!";
-    SerialConfig = findItemByName("SerialConfigWindow");
-    if (!SerialConfig)
+    serialConfigObject = findItemByName("SerialConfigWindow");
+    if (!serialConfigObject)
     {
         qDebug() << "Nem találom a SerialConfig objektumot.";
     }
     else
     {
-        connect(SerialConfig,SIGNAL(serialConfigDone()),this,SLOT(ConfigSavedHandler()));
+        connect(serialConfigObject,SIGNAL(serialConfigDone()),&mainSerialComm,SLOT(configSavedHandler()));
     }
 
-}
-
-void MainWindowCppSide::ConfigSavedHandler()
-{
-    qDebug() << "MainWindowCppSide::ConfigSaved()";
-
-    QString comport_string;
-    QVariant comnumberv;
-    QVariant baudratev;
-
-    serial = new QSerialPort(this);
-
-    qDebug() << "QML signalok csatlakoztatása";
-    QObject::connect(DiscoveryWindow, SIGNAL(toggleRed()),
-        this, SLOT(ledRedEntryHandler()));
-    QObject::connect(DiscoveryWindow, SIGNAL(toggleBlue()),
-        this, SLOT(ledBlueEntryHandler()));
-    QObject::connect(DiscoveryWindow, SIGNAL(toggleOrange()),
-        this, SLOT(ledOrangeEntryHandler()));
-    QObject::connect(DiscoveryWindow, SIGNAL(toggleGreen()),
-        this, SLOT(ledGreenEntryHandler()));
-
-    /* Serial port signalok csatlakoztatása */
-    connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
-            SLOT(handleError(QSerialPort::SerialPortError)));
-    connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
-
-    baudratev = QQmlProperty::read(SerialConfig, "baudrate");
-    comnumberv = QQmlProperty::read(SerialConfig, "comport");
-
-    qDebug() << "baudrate: "<<baudratev.toInt();
-    qDebug() << "comnumber: "<<comnumberv.toString();
-
-    comport_string = QString("COM");
-    comport_string.append(comnumberv.toString());
-    qDebug() << comport_string;
-
-    serial->setPortName(comport_string);
-    serial->setBaudRate(baudratev.toInt());
-    serial->setDataBits(QSerialPort::Data8);
-    serial->setParity(QSerialPort::NoParity);
-    serial->setStopBits(QSerialPort::OneStop);
-    serial->setFlowControl(QSerialPort::NoFlowControl);
-
-    if (serial->open(QIODevice::ReadWrite))
-    {
-        qDebug() << "Soros port inicializálva.";
-    }
 }
 
 

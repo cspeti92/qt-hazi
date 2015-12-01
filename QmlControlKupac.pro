@@ -6,7 +6,9 @@ TEMPLATE = app
 QT += qml quick widgets serialport
 
 SOURCES += main.cpp \
-    MainWindowCppSide.cpp
+    MainWindowCppSide.cpp \
+    SerialCommunication.cpp \
+    Logger.cpp
 
 RESOURCES += qml.qrc
 
@@ -17,4 +19,6 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    MainWindowCppSide.h
+    MainWindowCppSide.h \
+    SerialCommunication.h \
+    Logger.h

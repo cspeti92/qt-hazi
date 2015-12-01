@@ -1,6 +1,8 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include "MainWindowCppSide.h"
+#include "SerialCommunication.h"
+#include "Logger.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +11,10 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    MainWindowCppSide mainWindowCppSide(engine.rootObjects()[0],*engine.rootContext());
+    SerialComm sCom(nullptr);
+    Logger log(nullptr);
+
+    MainWindowCppSide mainWindowCppSide(engine.rootObjects()[0],*engine.rootContext(),sCom,log);
     Q_UNUSED(mainWindowCppSide);
 
     return app.exec();
