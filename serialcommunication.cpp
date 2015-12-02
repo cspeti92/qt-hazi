@@ -2,7 +2,7 @@
 #include "SerialCommunication.h"
 #include <QQmlProperty>
 
-SerialComm::SerialComm(MainWindowCppSide* MainWindow)
+SerialComm::SerialComm(MainWindowCppSide* MainWindow):statusTim()
 {
     serial = new QSerialPort(this);
     mainWindowFromSerial = MainWindow;
@@ -98,6 +98,9 @@ void SerialComm::configSavedHandler()
         connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
                 SLOT(handleError(QSerialPort::SerialPortError)));
         connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
+        // Timer a periodikus statusz küldéshez
+        connect(&statusTim,&QTimer::timeout,this,&sendStatusReq);
+        statusTim.start(1000);
     }
     else if(serial->error() == QSerialPort::DeviceNotFoundError)
     {
@@ -115,4 +118,13 @@ void SerialComm::configSavedHandler()
 void SerialComm::setMainWindowToSerial(MainWindowCppSide* MainWind)
 {
     mainWindowFromSerial = MainWind;
+}
+
+void SerialComm::sendStatusReq()
+{
+    qDebug() << "InSendStatusReq";
+    if(serial->isOpen() == true)
+    {
+        serial->write("s\r\n");
+    }
 }

@@ -5,6 +5,8 @@
 #include <QStringList>
 #include "MainWindowCppSide.h"
 
+#define STATUS_RESP_PARTS_NUM 6
+
 class Logger : public QObject
 {
     Q_OBJECT

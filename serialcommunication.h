@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtSerialPort/QSerialPort>
 #include "MainWindowCppSide.h"
+#include <QTimer>
 
 class SerialComm : public QObject
 {
@@ -22,6 +23,7 @@ private slots:
     void ledOrangeEntryHandler();
     void ledGreenEntryHandler();
     void configSavedHandler();
+    void sendStatusReq();
 signals:
     void serialDataAvailable(QString data);
 
@@ -29,6 +31,7 @@ private:
     QSerialPort* serial;
     MainWindowCppSide*  mainWindowFromSerial;
     QString serialDataBuff;
+    QTimer statusTim;
 };
 
 
