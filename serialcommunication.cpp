@@ -56,21 +56,8 @@ void SerialComm::configSavedHandler()
     QString comport_string;
     QVariant comnumberv;
     QVariant baudratev;
-
-    qDebug() << "QML signalok csatlakoztatása";
-    QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleRed()),
-        this, SLOT(ledRedEntryHandler()));
-    QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleBlue()),
-        this, SLOT(ledBlueEntryHandler()));
-    QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleOrange()),
-        this, SLOT(ledOrangeEntryHandler()));
-    QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleGreen()),
-        this, SLOT(ledGreenEntryHandler()));
-
-    /* Serial port signalok csatlakoztatása */
-    connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
-            SLOT(handleError(QSerialPort::SerialPortError)));
-    connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
+    QVariant returnedValue;
+    QVariant messageText;
 
     baudratev = QQmlProperty::read(mainWindowFromSerial->serialConfigObject, "baudrate");
     comnumberv = QQmlProperty::read(mainWindowFromSerial->serialConfigObject, "comport");
@@ -89,10 +76,40 @@ void SerialComm::configSavedHandler()
     serial->setStopBits(QSerialPort::OneStop);
     serial->setFlowControl(QSerialPort::NoFlowControl);
 
-    if (serial->open(QIODevice::ReadWrite))
+    if(serial->isOpen() == true)
+    {
+        messageText = "A soros port már nyitva van!";
+    }
+    else if (serial->open(QIODevice::ReadWrite))
     {
         qDebug() << "Soros port inicializálva.";
+        messageText = "Soros port sikeresen inicializálva!";
+        qDebug() << "QML signalok csatlakoztatása";
+        QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleRed()),
+            this, SLOT(ledRedEntryHandler()));
+        QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleBlue()),
+            this, SLOT(ledBlueEntryHandler()));
+        QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleOrange()),
+            this, SLOT(ledOrangeEntryHandler()));
+        QObject::connect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleGreen()),
+            this, SLOT(ledGreenEntryHandler()));
+
+        /* Serial port signalok csatlakoztatása */
+        connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
+                SLOT(handleError(QSerialPort::SerialPortError)));
+        connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
     }
+    else if(serial->error() == QSerialPort::DeviceNotFoundError)
+    {
+        messageText = "Nem találtam eszközt a soros porton!";
+    }
+    else if(serial->error() == QSerialPort::OpenError)
+    {
+        messageText = "Egyszer már létrehoztad erre az eszközre!";
+    }
+    QMetaObject::invokeMethod(mainWindowFromSerial->serialConfigObject, "show",
+        Q_RETURN_ARG(QVariant, returnedValue),
+        Q_ARG(QVariant, messageText));
 }
 
 void SerialComm::setMainWindowToSerial(MainWindowCppSide* MainWind)

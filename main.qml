@@ -10,7 +10,8 @@ ApplicationWindow {
     height: 480
     visible: true
     id: root
-    property variant win;  // you can hold this as a reference..
+    property variant win;
+    property bool serialWinFirstOpen : true; //elég csak 1 példány az ablakból
 
     // A C++ oldal számára
     objectName: "ApplicationWindow"
@@ -19,7 +20,7 @@ ApplicationWindow {
 
     menuBar: MenuBar {
         Menu {
-            title: "&Minden"
+            title: "&Beállítások"
             MenuItem {
                 text: "&Soros Port beállítása"
                 onTriggered:
@@ -27,8 +28,12 @@ ApplicationWindow {
                     if(Global.ConfigOpened == false)
                     {
                         Global.ConfigOpened = true;
-                        var component = Qt.createComponent("SerialPortConfig.qml");
-                        win = component.createObject(root);
+                        if(serialWinFirstOpen == true)
+                        {
+                            var component = Qt.createComponent("SerialPortConfig.qml");
+                            win = component.createObject(root);
+                            serialWinFirstOpen = false;
+                        }
                         win.show();
                         configOpened();
                     }

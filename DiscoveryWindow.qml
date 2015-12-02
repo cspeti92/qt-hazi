@@ -16,21 +16,6 @@ Item {
 
     property int margin: 10
 
-
-    property color selectedColor : "grey"
-
-    // C++ oldal is el tudja érni
-    property int lineWidth : 3
-
-    // C++ oldal is el tudja érni
-    function selectColor(messageText, color)
-    {
-        selectedColor = color;
-        drawingCanvas.requestPaint();
-        eventLogModel.append( { message: messageText, colorCode: color } );
-        console.log("selectColor(" + messageText + ", " + color + ")");
-    }
-
     RowLayout {
         id: baseGrid
         anchors.fill: parent
@@ -80,9 +65,16 @@ Item {
                     }
                 }
 
-                // Soros port log
-                ScrollView {
+                Text {
+                    id:serialLog
                     anchors.top:greenCheckBox.bottom
+                    anchors.margins: margin
+                    text: "Soros port szöveges log:";
+                }
+
+                // Soros port log scrollozható szöveggel
+                ScrollView {
+                    anchors.top:serialLog.bottom
                     anchors.margins: margin
                     Layout.fillHeight: true
 
