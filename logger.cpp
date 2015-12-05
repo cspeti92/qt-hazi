@@ -4,7 +4,6 @@
 #include <QRegularExpression>
 #include "logdata.h"
 #include <memory>
-
 Logger::Logger(MainWindowCppSide* MainWindow):currentState(0.0,0.0,0.0,0.0,false)
 {
     mainWindowFromLogger = MainWindow;
@@ -95,6 +94,12 @@ void Logger::LoggerProcessMsg(QString data)
             {
                 currentState.updateCurrentLogData(xa,ya,za,ta,buttona);
                 mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
+                QVariant returnedValue;
+                 QVariant xv = xa;
+                 qDebug() << "updateDataset QML függvény meghívása...";
+                 QMetaObject::invokeMethod(mainWindowFromLogger->discoveryWindowObject, "updateDataset",
+                    Q_RETURN_ARG(QVariant, returnedValue),
+                    Q_ARG(QVariant, xv));
             }
         }
 

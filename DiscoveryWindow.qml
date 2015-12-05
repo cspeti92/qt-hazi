@@ -1,8 +1,10 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
-
-
+import jbQuick.Charts 1.0
+import "."
+import "QChart.js" as Charts
+import "QChartGallery.js" as ChartsData
 
 Item {
     anchors.fill: parent
@@ -15,6 +17,18 @@ Item {
     signal toggleBlue();
 
     property int margin: 10
+    property   var chartOptions: ({})
+    property double rawdata: 4.0
+
+    function updateDataset(newx)
+    {
+        ChartsData.ChartLineData.labels.push("");
+        console.debug(ChartsData.ChartLineData.labels)
+        ChartsData.ChartLineData.datasets[0].data.push(newx);
+        chart_line.chartOptions = false;
+        chart_line.repaint();
+    }
+
 
     RowLayout {
         id: baseGrid
@@ -55,6 +69,7 @@ Item {
                     text: "Narancssárga"
                     onClicked: {
                         toggleOrange();
+                        updateDataset(1);
                     }
                 }
 
@@ -116,6 +131,38 @@ Item {
         {
             Layout.fillHeight: true
             Layout.fillWidth: true
+
+            ColumnLayout
+            {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                GroupBox
+                {
+                    anchors.margins: margin
+
+                    Image
+                    {
+                        source: "\disc.jpg"
+                        anchors.margins: margin
+                        transform:
+                        [
+                            Rotation { origin.x: 88; origin.y: 138; axis { x: 0; y: 1; z: 0 } angle: (currentState.x.toFixed(0)*9) },
+                            Rotation { origin.x: 88; origin.y: 138; axis { x: 1; y: 0; z: 0 } angle: (currentState.y.toFixed(0)*9) }
+                        ]
+                        smooth: true
+                    }
+                }
+
+                Chart
+                {
+                     id: chart_line;
+                     width: 300;
+                     height: 200;
+                     chartAnimated: false;
+                     chartData: ChartsData.ChartLineData;
+                     chartType: Charts.ChartType.LINE;
+                }
+            }
         }
     }
 }

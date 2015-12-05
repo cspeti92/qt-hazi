@@ -4,5 +4,8 @@
         <file>DiscoveryWindow.qml</file>
         <file>SerialPortConfig.qml</file>
         <file>globalvars.js</file>
+        <file>disc.jpg</file>
+        <file>QChart.js</file>
+        <file>QChartGallery.js</file>
     </qresource>
 </RCC>

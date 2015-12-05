@@ -4,6 +4,9 @@ import QtQuick.Window 2.2
 import QtQuick.Dialogs 1.2
 import "globalvars.js" as Global
 
+
+
+
 ApplicationWindow {
     title: "DiscoverySimulator"
     width: 640
