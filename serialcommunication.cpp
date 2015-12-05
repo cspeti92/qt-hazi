@@ -100,7 +100,7 @@ void SerialComm::configSavedHandler()
         connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
         // Timer a periodikus statusz küldéshez
         connect(&statusTim,&QTimer::timeout,this,&sendStatusReq);
-        statusTim.start(1000);
+        statusTim.start(500);
     }
     else if(serial->error() == QSerialPort::DeviceNotFoundError)
     {

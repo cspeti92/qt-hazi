@@ -2,8 +2,10 @@
 #include "MainWindowCppSide.h"
 #include "Logger.h"
 #include <QRegularExpression>
+#include "logdata.h"
+#include <memory>
 
-Logger::Logger(MainWindowCppSide* MainWindow)
+Logger::Logger(MainWindowCppSide* MainWindow):currentState(0.0,0.0,0.0,0.0,false)
 {
     mainWindowFromLogger = MainWindow;
 }
@@ -11,12 +13,16 @@ Logger::Logger(MainWindowCppSide* MainWindow)
 void Logger::setMainWindowToLogger(MainWindowCppSide* MainWindow)
 {
     mainWindowFromLogger = MainWindow;
+    mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
 }
 
 void Logger::LoggerProcessMsg(QString data)
 {
     QStringList splitStr,splitPart;
     int i;
+    float xa,ya,za,ta;
+    bool buttona;
+    bool statusValueChanged = true;
     // a soros porttól érkező adat átvétele és feldolgozása
     qDebug() << "Adat érkezett a loggerbe"<<data;
     splitStr = data.split(QRegularExpression("\\,"));
@@ -49,6 +55,33 @@ void Logger::LoggerProcessMsg(QString data)
                 if(splitPart.size() == 2)
                 {
                     qDebug() << splitPart[0]<<":"<<splitPart[1];
+                    if(splitPart[0] == "x")
+                    {
+
+                        xa = G_TO_MSS*splitPart[1].toFloat();
+                        qDebug() << "xa:"<<xa;
+                    }
+                    else if(splitPart[0] == "y")
+                    {
+                        ya = G_TO_MSS*splitPart[1].toFloat();
+                    }
+                    else if(splitPart[0] == "z")
+                    {
+                        za = G_TO_MSS*splitPart[1].toFloat();
+                    }
+                    else if(splitPart[0] == "t")
+                    {
+                        ta = splitPart[1].toFloat();
+                    }
+                    else if(splitPart[0] == "b")
+                    {
+                        buttona = (splitPart[1].toInt() == 0) ? false : true;
+                    }
+                    else
+                    {
+                        // nem várt karakter -> megakadályozzuk a fals frissítést
+                        statusValueChanged = false;
+                    }
 
                 }
                 else
@@ -57,7 +90,14 @@ void Logger::LoggerProcessMsg(QString data)
                 }
 
             }
+
+            if(statusValueChanged == true)
+            {
+                currentState.updateCurrentLogData(xa,ya,za,ta,buttona);
+                mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
+            }
         }
+
 
     }
 

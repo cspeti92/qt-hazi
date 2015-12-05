@@ -29,6 +29,7 @@ Item {
 
             ColumnLayout {
                 anchors.fill: parent
+                id: firstColoumn
 
                 Text {
                     text: "Ledek kapcsolása:";
@@ -65,9 +66,21 @@ Item {
                     }
                 }
 
+                // Oszlopba rendezett további elemek
+                ColumnLayout {
+                    id: currentStateId
+                    anchors.top: greenCheckBox.bottom
+                    anchors.margins: margin
+                    Text { text: " X: " + currentState.x.toFixed(3) + " m/s^2"  }
+                    Text { text: " Y: " + currentState.y.toFixed(3) + " m/s^2"  }
+                    Text { text: " Z: " + currentState.z.toFixed(3) + " m/s^2"  }
+                    Text { text: " T: " + currentState.temp.toFixed(3) + " °C"  }
+                    Text { text: " Nyomógomb: " + (currentState.button !== false ? "Lenyomva":"Nincs lenyomva") }
+                }
+
                 Text {
                     id:serialLog
-                    anchors.top:greenCheckBox.bottom
+                    anchors.top:currentStateId.bottom
                     anchors.margins: margin
                     text: "Soros port szöveges log:";
                 }
@@ -75,8 +88,10 @@ Item {
                 // Soros port log scrollozható szöveggel
                 ScrollView {
                     anchors.top:serialLog.bottom
+                    anchors.bottom: firstColoumn.bottom
                     anchors.margins: margin
                     Layout.fillHeight: true
+
 
                     // Itt jön a tényleges lista.
                     ListView {
