@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.1
 import jbQuick.Charts 1.0
 import "."
 import "QChart.js" as Charts
-import "QChartGallery.js" as ChartsData
+import "ChartData.js" as ChartsData
 
 Item {
     anchors.fill: parent
@@ -19,14 +19,31 @@ Item {
     property int margin: 10
     property   var chartOptions: ({})
     property double rawdata: 4.0
+    property int factor:5
+    //az első oszlop szélessé fix 25
+    property int axisTitleWidth: 90
+    property int firstColWidth:160
+    property int graphsWidth:((root.width-firstColWidth-axisTitleWidth)/2)
+    property int graphsHeight: root.height/3
+    property double factorx: root.width/root.minimumWidth
+    property double factory: root.height/root.minimumHeight
 
-    function updateDataset(newx)
+    function updateDataset(newx,newy,newz)
     {
-        ChartsData.ChartLineData.labels.push("");
-        console.debug(ChartsData.ChartLineData.labels)
-        ChartsData.ChartLineData.datasets[0].data.push(newx);
-        chart_line.chartOptions = false;
-        chart_line.repaint();
+        ChartsData.ChartLineDataX.labels.push("");
+        ChartsData.ChartLineDataX.datasets[0].data.push(newx);
+        chart_linex.chartOptions = false;
+        chart_linex.repaint();
+
+        ChartsData.ChartLineDataY.labels.push("");
+        ChartsData.ChartLineDataY.datasets[0].data.push(newy);
+        chart_liney.chartOptions = false;
+        chart_liney.repaint();
+
+        ChartsData.ChartLineDataZ.labels.push("");
+        ChartsData.ChartLineDataZ.datasets[0].data.push(newz);
+        chart_linez.chartOptions = false;
+        chart_linez.repaint();
     }
 
 
@@ -39,7 +56,8 @@ Item {
 
         GroupBox {
             Layout.fillHeight: true
-
+            Layout.fillWidth: true
+            Layout.maximumWidth: firstColWidth
 
             ColumnLayout {
                 anchors.fill: parent
@@ -69,7 +87,6 @@ Item {
                     text: "Narancssárga"
                     onClicked: {
                         toggleOrange();
-                        updateDataset(1);
                     }
                 }
 
@@ -78,6 +95,7 @@ Item {
                     text: "Zöld"
                     onClicked: {
                         toggleGreen();
+                        console.log(debug.width);
                     }
                 }
 
@@ -106,9 +124,10 @@ Item {
                     anchors.bottom: firstColoumn.bottom
                     anchors.margins: margin
                     Layout.fillHeight: true
+                    Layout.maximumWidth: firstColWidth-margin
 
 
-                    // Itt jön a tényleges lista.
+                    // Itt a szöveges logok listája.
                     ListView {
                         id: logHistoryList
                         model: logModel
@@ -121,7 +140,6 @@ Item {
                         }
                     }
                 }
-
             }
         }
 
@@ -129,39 +147,91 @@ Item {
 
         GroupBox
         {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
 
+            Layout.fillHeight:true
             ColumnLayout
             {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
+                Layout.fillHeight:true
                 GroupBox
                 {
-                    anchors.margins: margin
-
-                    Image
+                   width: graphsWidth
+                   height: graphsHeight
+                   title:"A panel:"
+                   anchors.margins: margin
+                   Image
                     {
                         source: "\disc.jpg"
                         anchors.margins: margin
+
                         transform:
                         [
-                            Rotation { origin.x: 88; origin.y: 138; axis { x: 0; y: 1; z: 0 } angle: (currentState.x.toFixed(0)*9) },
-                            Rotation { origin.x: 88; origin.y: 138; axis { x: 1; y: 0; z: 0 } angle: (currentState.y.toFixed(0)*9) }
+                            Rotation { origin.x: (175)*factorx/2; origin.y: (275)*factory/2; axis { x: 0; y: 1; z: 0 } angle: (currentState.x.toFixed(0)*9) },
+                            Rotation { origin.x: (175)*factorx/2; origin.y: (275)*factory/2; axis { x: 1; y: 0; z: 0 } angle: (currentState.y.toFixed(0)*9) }
                         ]
                         smooth: true
                     }
                 }
 
-                Chart
+                GroupBox
                 {
-                     id: chart_line;
-                     width: 300;
-                     height: 200;
-                     chartAnimated: false;
-                     chartData: ChartsData.ChartLineData;
-                     chartType: Charts.ChartType.LINE;
+                    width: graphsWidth
+                    height: graphsHeight
+                    title:"X irányú gyorsulás:"
+                    Chart
+                    {
+                        id: chart_linex;
+                        width: graphsWidth
+                        height: graphsHeight
+                        chartAnimated: false;
+                        chartData: ChartsData.ChartLineDataX;
+                        chartType: Charts.ChartType.LINE;
+                    }
                 }
+
+            }
+        }
+
+        // 3. oszlop
+
+        GroupBox
+        {
+
+            Layout.fillHeight:true
+            ColumnLayout
+            {
+                Layout.fillHeight:true
+                GroupBox
+                {
+                    width: graphsWidth
+                    height: graphsHeight
+                    title:"Y irányú gyorsulás:"
+                    Chart
+                    {
+                        id: chart_liney;
+                        width: graphsWidth
+                        height: graphsHeight
+                        chartAnimated: false;
+                        chartData: ChartsData.ChartLineDataY;
+                        chartType: Charts.ChartType.LINE;
+                    }
+                }
+
+                GroupBox
+                {
+                    width: graphsWidth
+                    height: graphsHeight
+                    title:"Z irányú gyorsulás:"
+                    Chart
+                    {
+                        id: chart_linez;
+                        width: graphsWidth
+                        height: graphsHeight
+                        chartAnimated: false;
+                        chartData: ChartsData.ChartLineDataZ;
+                        chartType: Charts.ChartType.LINE;
+                    }
+                }
+
             }
         }
     }

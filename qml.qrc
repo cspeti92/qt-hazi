@@ -6,6 +6,6 @@
         <file>globalvars.js</file>
         <file>disc.jpg</file>
         <file>QChart.js</file>
-        <file>QChartGallery.js</file>
+        <file>ChartData.js</file>
     </qresource>
 </RCC>

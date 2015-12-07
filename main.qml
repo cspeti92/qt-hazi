@@ -9,8 +9,8 @@ import "globalvars.js" as Global
 
 ApplicationWindow {
     title: "DiscoverySimulator"
-    width: 640
-    height: 480
+    minimumWidth: 800
+    minimumHeight: 600
     visible: true
     id: root
     property variant win;

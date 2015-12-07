@@ -95,11 +95,13 @@ void Logger::LoggerProcessMsg(QString data)
                 currentState.updateCurrentLogData(xa,ya,za,ta,buttona);
                 mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
                 QVariant returnedValue;
-                 QVariant xv = xa;
-                 qDebug() << "updateDataset QML függvény meghívása...";
-                 QMetaObject::invokeMethod(mainWindowFromLogger->discoveryWindowObject, "updateDataset",
+                QVariant xv = xa;
+                QVariant yv = ya;
+                QVariant zv = za;
+                qDebug() << "updateDataset QML függvény meghívása...";
+                QMetaObject::invokeMethod(mainWindowFromLogger->discoveryWindowObject, "updateDataset",
                     Q_RETURN_ARG(QVariant, returnedValue),
-                    Q_ARG(QVariant, xv));
+                    Q_ARG(QVariant, xv),Q_ARG(QVariant, yv),Q_ARG(QVariant, zv));
             }
         }
 
