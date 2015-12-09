@@ -4,6 +4,7 @@
 #include <QRegularExpression>
 #include "logdata.h"
 #include <memory>
+#include <QTime>
 
 Logger::Logger(MainWindowCppSide* MainWindow):currentState(0.0,0.0,0.0,0.0,false)
 {
@@ -19,6 +20,8 @@ void Logger::setMainWindowToLogger(MainWindowCppSide* MainWindow)
 void Logger::LoggerProcessMsg(QString data)
 {
     QStringList splitStr,splitPart;
+    QString tempString,statusString;
+    QTime currTime;
     int i;
     float xa,ya,za,ta;
     bool buttona;
@@ -33,8 +36,13 @@ void Logger::LoggerProcessMsg(QString data)
     {
         //egyszerű szöveges üzenet -> kitesszük a szöveges logra
         //*@warning: nem lehet vessző a szöveges részben vessző! /
-        logList.append(splitStr[1]);
+        currTime = QTime::currentTime();
+        tempString = currTime.toString("hh:mm:ss");
+        tempString.append(" : ");
+        tempString.append(splitStr[1]);
+        logList.append(tempString);
         mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("logModel"),QVariant::fromValue(logList));
+
     }
 
     else if(splitStr[0] == "s")
@@ -75,7 +83,7 @@ void Logger::LoggerProcessMsg(QString data)
                     }
                     else if(splitPart[0] == "b")
                     {
-                        buttona = (splitPart[1].toInt() == 0) ? false : true;
+                        buttona = (splitPart[1] == "Pressed") ? true : false;
                     }
                     else
                     {
@@ -87,6 +95,7 @@ void Logger::LoggerProcessMsg(QString data)
                 else
                 {
                    qDebug() << "Sérült üzenet, rossz kulcs:érték pár";
+                   statusValueChanged = false;
                 }
 
             }
@@ -95,6 +104,17 @@ void Logger::LoggerProcessMsg(QString data)
             {
                 currentState.updateCurrentLogData(xa,ya,za,ta,buttona);
                 mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
+                // A grafikonrol nem leolvasható korábbi adatok kiírása
+                statusString.sprintf("T: %.3f, Gomb: %d",ta,buttona);
+                currTime = QTime::currentTime();
+                tempString = currTime.toString("hh:mm:ss");
+                tempString.append(" : ");
+                tempString.append(statusString);
+                logList.append(tempString);
+                mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("logModel"),QVariant::fromValue(logList));
+
+
+
             }
         }
 

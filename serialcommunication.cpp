@@ -11,7 +11,7 @@ SerialComm::SerialComm(MainWindowCppSide* MainWindow):statusTim()
 
 void SerialComm::readData()
 {
-    serialDataBuff = serial->readAll();
+    serialDataBuff = serial->readLine(COMM_RECEIVE_MAX_LEN);
     qDebug() << "Uj adat jött: "<<serialDataBuff;
     emit serialDataAvailable(serialDataBuff);
 }
@@ -110,6 +110,7 @@ void SerialComm::configSavedHandler()
     {
         messageText = "Egyszer már létrehoztad erre az eszközre!";
     }
+    //Új figyelmeztető ablak az állapotnak megfelelő üzenettel
     QMetaObject::invokeMethod(mainWindowFromSerial->serialConfigObject, "show",
         Q_RETURN_ARG(QVariant, returnedValue),
         Q_ARG(QVariant, messageText));

@@ -6,6 +6,8 @@
 #include "MainWindowCppSide.h"
 #include <QTimer>
 
+#define COMM_RECEIVE_MAX_LEN    70
+
 class SerialComm : public QObject
 {
     Q_OBJECT
