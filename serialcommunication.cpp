@@ -129,3 +129,38 @@ void SerialComm::sendStatusReq()
         serial->write("s\r\n");
     }
 }
+
+void SerialComm::configResetHandler()
+{
+    QVariant returnedValue;
+    if(serial->isOpen() == true)
+    {
+         qDebug() << "Szimulacio lezárása";
+         QObject::disconnect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleRed()),
+             this, SLOT(ledRedEntryHandler()));
+         QObject::disconnect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleBlue()),
+             this, SLOT(ledBlueEntryHandler()));
+         QObject::disconnect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleOrange()),
+             this, SLOT(ledOrangeEntryHandler()));
+         QObject::disconnect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleGreen()),
+             this, SLOT(ledGreenEntryHandler()));
+
+         /* Serial port signalok csatlakoztatása */
+         disconnect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
+                 SLOT(handleError(QSerialPort::SerialPortError)));
+         disconnect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
+         // Timer a periodikus statusz küldéshez
+         disconnect(&statusTim,&QTimer::timeout,this,&sendStatusReq);
+         statusTim.stop();
+         serial->close();
+
+         QMetaObject::invokeMethod(mainWindowFromSerial->discoveryWindowObject, "resetGraphs",
+             Q_RETURN_ARG(QVariant, returnedValue));
+    }
+    else
+    {
+        QMetaObject::invokeMethod(mainWindowFromSerial->serialConfigObject, "show",
+            Q_RETURN_ARG(QVariant, returnedValue),
+            Q_ARG(QVariant,  "Még nem hoztál létre kapcsolatot az eszközzel!"));
+    }
+}

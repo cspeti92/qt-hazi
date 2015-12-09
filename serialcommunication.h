@@ -26,6 +26,7 @@ private slots:
     void ledGreenEntryHandler();
     void configSavedHandler();
     void sendStatusReq();
+    void configResetHandler();
 signals:
     void serialDataAvailable(QString data);
 

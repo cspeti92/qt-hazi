@@ -29,10 +29,14 @@ Window {
         objectName: "SerialConfigWindow"
         property string comport
         property int baudrate
+        property bool symStarted: false
         comport: "-1"
         baudrate: 9600
         signal serialConfigDone();
+        signal resetLogData();
+        signal stopSimulation();
         id: serialId
+
 
         function show(caption) {
             messageDialog.text = caption;
@@ -109,7 +113,7 @@ Window {
 				{
 					id: validateSerialConfig
 					Layout.fillWidth: true
-					text: "Mentés!"
+                    text: "Start!"
 					onClicked:
 					{
                         if(serialId.comport != "-1")
@@ -117,6 +121,7 @@ Window {
 							console.log("Serial configuration finished");
                             /* TODO: Handle the real status of the serial port */
                             serialId.serialConfigDone();
+                            serialId.symStarted = true;
 						}
 						else
 						{
@@ -124,6 +129,25 @@ Window {
 						}
 					}
 				}
+                Button
+                {
+                    id: inValidateSerialConfig
+                    Layout.fillWidth: true
+                    text: "Stop!"
+                    onClicked:
+                    {
+                        if(serialId.symStarted == true)
+                        {
+                            serialId.resetLogData();
+                            serialId.stopSimulation();
+                            serialId.symStarted = false;
+                        }
+                        else
+                        {
+                            messageDialog.warn(qsTr("Még nem hoztál létre kapcsolatot a Discoveryvel!"));
+                        }
+                    }
+                }
 
 			}
 		}

@@ -21,6 +21,7 @@ public:
 signals:
 public slots:
     void LoggerProcessMsg(QString data);
+    void resetLogger();
 private:
     MainWindowCppSide*  mainWindowFromLogger;
     QStringList logList;
