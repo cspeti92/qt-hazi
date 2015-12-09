@@ -9,6 +9,10 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+
+    engine.addImportPath(QStringLiteral("/jbQuick/Charts/"));
+    engine.addImportPath(QStringLiteral("D:/egyetem/qt hazi"));
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     SerialComm sCom(nullptr);
