@@ -1,5 +1,5 @@
 var ChartLineDataX = {
-      labels: ["ido"],
+      labels: [""],
     datasets: [{
                fillColor: "rgba(40,240,40,1)",
              strokeColor: "rgba(220,220,220,1)",
@@ -16,7 +16,7 @@ var ChartLineDataX = {
 }
 
 var ChartLineDataY = {
-      labels: ["ido"],
+      labels: [""],
     datasets: [{
                fillColor: "rgba(40,40,233,1)",
              strokeColor: "rgba(220,220,220,1)",
@@ -34,7 +34,7 @@ var ChartLineDataY = {
 
 
 var ChartLineDataZ = {
-      labels: ["ido"],
+      labels: [""],
     datasets: [{
                fillColor: "rgba(233,50,50,1)",
              strokeColor: "rgba(220,220,220,1)",
