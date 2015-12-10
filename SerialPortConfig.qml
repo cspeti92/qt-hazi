@@ -29,10 +29,14 @@ Window {
         objectName: "SerialConfigWindow"
         property string comport
         property int baudrate
+        property bool symStarted: false
         comport: "-1"
         baudrate: 9600
         signal serialConfigDone();
+        signal resetLogData();
+        signal stopSimulation();
         id: serialId
+
 
         function show(caption) {
             messageDialog.text = caption;
@@ -109,21 +113,49 @@ Window {
 				{
 					id: validateSerialConfig
 					Layout.fillWidth: true
-					text: "Mentés!"
+                    text: "Start!"
 					onClicked:
 					{
-                        if(serialId.comport != "-1")
+                        if(serialId.comport != "-1" && serialId.symStarted == false)
 						{
 							console.log("Serial configuration finished");
                             /* TODO: Handle the real status of the serial port */
                             serialId.serialConfigDone();
+                            // a symStarted változót c++ból írjuk, hiszen ott ismert a soros port állapota
+
+
 						}
-						else
+                        else if(serialId.comport == "-1" && serialId.symStarted == false)
 						{
                             messageDialog.warn(qsTr("Válassz ki egy COM portot!"));
 						}
+                        else if(serialId.symStarted == true)
+                        {
+                            messageDialog.warn(qsTr("Már létrehoztad a kapcsolatot!"));
+                        }
 					}
 				}
+                Button
+                {
+                    id: inValidateSerialConfig
+                    Layout.fillWidth: true
+                    text: "Stop!"
+                    onClicked:
+                    {
+                        console.debug(serialId.symStarted);
+                        if(serialId.symStarted == true)
+                        {
+                            serialId.resetLogData();
+                            serialId.stopSimulation();
+                            serialId.symStarted = false;
+
+                        }
+                        else
+                        {
+                            messageDialog.warn(qsTr("Még nem hoztál létre kapcsolatot a Discoveryvel!"));
+                        }
+                    }
+                }
 
 			}
 		}

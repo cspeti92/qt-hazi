@@ -42,6 +42,7 @@ MainWindowCppSide::MainWindowCppSide(QObject *rootObject,QQmlContext &qmlContext
              mainLogger.setMainWindowToLogger(this);
              //összekötjük őket egyből, hogy ne a SerialCommunicationből kelljen
              connect(&mainSerialComm,&SerialComm::serialDataAvailable,&mainLogger,&Logger::LoggerProcessMsg);
+
         }
     }
 
@@ -100,6 +101,9 @@ void MainWindowCppSide::configOpenedHandler()
     else
     {
         connect(serialConfigObject,SIGNAL(serialConfigDone()),&mainSerialComm,SLOT(configSavedHandler()));
+        connect(serialConfigObject,SIGNAL(stopSimulation()),&mainSerialComm,SLOT(configResetHandler()));
+        //beállítjuk a logdata törlésre szolgáló slotot is
+        connect(serialConfigObject,SIGNAL(resetLogData()),&mainLogger, SLOT(resetLogger()));
     }
 
 }

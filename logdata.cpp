@@ -19,3 +19,12 @@ void LogData::updateCurrentLogData(float x,float y, float z,float temp,bool butt
     setTemp(temp);
     setButton(buttonpressed);
 }
+
+void LogData::resetCurrentLogData()
+{
+    setX(0.0);
+    setY(0.0);
+    setZ(0.0);
+    setTemp(0.0);
+    setButton(0);
+}

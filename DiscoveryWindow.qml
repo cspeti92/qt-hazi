@@ -9,6 +9,7 @@ import "ChartData.js" as ChartsData
 Item {
     anchors.fill: parent
     objectName: "DiscoveryWindow"
+    id:discId
 
     // signals for the leds
     signal toggleRed();
@@ -65,6 +66,22 @@ Item {
         ChartsData.ChartLineDataZ.datasets[0].data.push(newz);
         chart_linez.chartOptions = false;
         chart_linez.repaint();
+
+    }
+
+    function resetGraphs()
+    {
+        ChartsData.ChartLineDataX.labels.splice(1,ChartsData.ChartLineDataX.labels.length);
+        ChartsData.ChartLineDataX.datasets[0].data.splice(1,ChartsData.ChartLineDataX.datasets[0].data.length);
+        chart_linex.repaint();
+
+        ChartsData.ChartLineDataY.labels.splice(1,ChartsData.ChartLineDataY.labels.length);
+        ChartsData.ChartLineDataY.datasets[0].data.splice(1,ChartsData.ChartLineDataY.datasets[0].data.length);
+        chart_liney.repaint();
+
+        ChartsData.ChartLineDataZ.labels.splice(1,ChartsData.ChartLineDataZ.labels.length);
+        ChartsData.ChartLineDataZ.datasets[0].data.splice(1,ChartsData.ChartLineDataZ.datasets[0].data.length);
+        chart_linez.repaint();
     }
 
 
@@ -116,7 +133,6 @@ Item {
                     text: "Zöld"
                     onClicked: {
                         toggleGreen();
-                        console.log(debug.width);
                     }
                 }
 

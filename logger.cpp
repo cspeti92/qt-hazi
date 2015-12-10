@@ -14,6 +14,7 @@ void Logger::setMainWindowToLogger(MainWindowCppSide* MainWindow)
 {
     mainWindowFromLogger = MainWindow;
     mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
+
 }
 
 void Logger::LoggerProcessMsg(QString data)
@@ -126,5 +127,12 @@ void Logger::LoggerProcessMsg(QString data)
 
 
     }
+
+}
+
+void Logger::resetLogger()
+{
+    currentState.resetCurrentLogData();
+    mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
 
 }

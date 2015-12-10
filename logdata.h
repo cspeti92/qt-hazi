@@ -35,7 +35,7 @@ public:
     void setTemp(float temp) { _temp= temp; }
 
     void updateCurrentLogData(float x,float y, float z,float temp,bool buttonpressed);
-
+    void resetCurrentLogData();
 
 signals:
     void xChanged();
