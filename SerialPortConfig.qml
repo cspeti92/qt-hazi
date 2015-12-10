@@ -116,17 +116,23 @@ Window {
                     text: "Start!"
 					onClicked:
 					{
-                        if(serialId.comport != "-1")
+                        if(serialId.comport != "-1" && serialId.symStarted == false)
 						{
 							console.log("Serial configuration finished");
                             /* TODO: Handle the real status of the serial port */
                             serialId.serialConfigDone();
-                            serialId.symStarted = true;
+                            // a symStarted változót c++ból írjuk, hiszen ott ismert a soros port állapota
+
+
 						}
-						else
+                        else if(serialId.comport == "-1" && serialId.symStarted == false)
 						{
                             messageDialog.warn(qsTr("Válassz ki egy COM portot!"));
 						}
+                        else if(serialId.symStarted == true)
+                        {
+                            messageDialog.warn(qsTr("Már létrehoztad a kapcsolatot!"));
+                        }
 					}
 				}
                 Button
@@ -136,11 +142,13 @@ Window {
                     text: "Stop!"
                     onClicked:
                     {
+                        console.debug(serialId.symStarted);
                         if(serialId.symStarted == true)
                         {
                             serialId.resetLogData();
                             serialId.stopSimulation();
                             serialId.symStarted = false;
+
                         }
                         else
                         {

@@ -58,6 +58,7 @@ void SerialComm::configSavedHandler()
     QVariant baudratev;
     QVariant returnedValue;
     QVariant messageText;
+    bool simulationStarted = false;
 
     baudratev = QQmlProperty::read(mainWindowFromSerial->serialConfigObject, "baudrate");
     comnumberv = QQmlProperty::read(mainWindowFromSerial->serialConfigObject, "comport");
@@ -79,6 +80,7 @@ void SerialComm::configSavedHandler()
     if(serial->isOpen() == true)
     {
         messageText = "A soros port már nyitva van!";
+        simulationStarted = true;
     }
     else if (serial->open(QIODevice::ReadWrite))
     {
@@ -95,12 +97,11 @@ void SerialComm::configSavedHandler()
             this, SLOT(ledGreenEntryHandler()));
 
         /* Serial port signalok csatlakoztatása */
-        connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
-                SLOT(handleError(QSerialPort::SerialPortError)));
         connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
         // Timer a periodikus statusz küldéshez
         connect(&statusTim,&QTimer::timeout,this,&sendStatusReq);
         statusTim.start(500);
+        simulationStarted = true;
     }
     else if(serial->error() == QSerialPort::DeviceNotFoundError)
     {
@@ -114,6 +115,8 @@ void SerialComm::configSavedHandler()
     QMetaObject::invokeMethod(mainWindowFromSerial->serialConfigObject, "show",
         Q_RETURN_ARG(QVariant, returnedValue),
         Q_ARG(QVariant, messageText));
+    //qml oldali statusz informacio frissítése
+    QQmlProperty::write(mainWindowFromSerial->serialConfigObject, "symStarted", simulationStarted);
 }
 
 void SerialComm::setMainWindowToSerial(MainWindowCppSide* MainWind)
@@ -145,9 +148,9 @@ void SerialComm::configResetHandler()
          QObject::disconnect(mainWindowFromSerial->discoveryWindowObject, SIGNAL(toggleGreen()),
              this, SLOT(ledGreenEntryHandler()));
 
+
+
          /* Serial port signalok csatlakoztatása */
-         disconnect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
-                 SLOT(handleError(QSerialPort::SerialPortError)));
          disconnect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
          // Timer a periodikus statusz küldéshez
          disconnect(&statusTim,&QTimer::timeout,this,&sendStatusReq);
@@ -157,10 +160,5 @@ void SerialComm::configResetHandler()
          QMetaObject::invokeMethod(mainWindowFromSerial->discoveryWindowObject, "resetGraphs",
              Q_RETURN_ARG(QVariant, returnedValue));
     }
-    else
-    {
-        QMetaObject::invokeMethod(mainWindowFromSerial->serialConfigObject, "show",
-            Q_RETURN_ARG(QVariant, returnedValue),
-            Q_ARG(QVariant,  "Még nem hoztál létre kapcsolatot az eszközzel!"));
-    }
+
 }
