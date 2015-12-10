@@ -16,6 +16,8 @@ Item {
     signal toggleGreen();
     signal toggleBlue();
 
+    property int chartDataNum: 0
+    property int maxChartDataNum: 119
     property int margin: 10
     property   var chartOptions: ({})
     property double rawdata: 4.0
@@ -30,16 +32,35 @@ Item {
 
     function updateDataset(newx,newy,newz)
     {
+        chartDataNum++;
+        console.debug(chartDataNum);
+        //Az utolsó maxChartDataNum mintát tartjuk meg a jó láthatóság érdekében
+        if(chartDataNum === maxChartDataNum)
+        {
+            ChartsData.ChartLineDataX.datasets[0].data.shift();
+            ChartsData.ChartLineDataX.labels.shift();
+        }
         ChartsData.ChartLineDataX.labels.push("");
         ChartsData.ChartLineDataX.datasets[0].data.push(newx);
         chart_linex.chartOptions = false;
         chart_linex.repaint();
 
+        if(chartDataNum === maxChartDataNum)
+        {
+            ChartsData.ChartLineDataY.datasets[0].data.shift();
+            ChartsData.ChartLineDataY.labels.shift();
+        }
         ChartsData.ChartLineDataY.labels.push("");
         ChartsData.ChartLineDataY.datasets[0].data.push(newy);
         chart_liney.chartOptions = false;
         chart_liney.repaint();
 
+        if(chartDataNum === maxChartDataNum)
+        {
+            ChartsData.ChartLineDataZ.datasets[0].data.shift();
+            ChartsData.ChartLineDataZ.labels.shift();
+            chartDataNum--;
+        }
         ChartsData.ChartLineDataZ.labels.push("");
         ChartsData.ChartLineDataZ.datasets[0].data.push(newz);
         chart_linez.chartOptions = false;
@@ -154,10 +175,8 @@ Item {
                 Layout.fillHeight:true
                 GroupBox
                 {
-                   width: graphsWidth
-                   height: graphsHeight
+                   Layout.fillWidth:true
                    title:"A panel:"
-                   anchors.margins: margin
                    Image
                     {
                         source: "\disc.jpg"
@@ -174,8 +193,7 @@ Item {
 
                 GroupBox
                 {
-                    width: graphsWidth
-                    height: graphsHeight
+                    Layout.fillWidth:true
                     title:"X irányú gyorsulás:"
                     Chart
                     {
@@ -202,8 +220,7 @@ Item {
                 Layout.fillHeight:true
                 GroupBox
                 {
-                    width: graphsWidth
-                    height: graphsHeight
+                    Layout.fillWidth:true
                     title:"Y irányú gyorsulás:"
                     Chart
                     {
@@ -218,8 +235,9 @@ Item {
 
                 GroupBox
                 {
-                    width: graphsWidth
-                    height: graphsHeight
+                    Layout.fillWidth:true
+                    //width: graphsWidth
+                    //height: graphsHeight
                     title:"Z irányú gyorsulás:"
                     Chart
                     {
@@ -231,7 +249,6 @@ Item {
                         chartType: Charts.ChartType.LINE;
                     }
                 }
-
             }
         }
     }

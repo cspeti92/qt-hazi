@@ -19,8 +19,9 @@ void Logger::setMainWindowToLogger(MainWindowCppSide* MainWindow)
 void Logger::LoggerProcessMsg(QString data)
 {
     QStringList splitStr,splitPart;
-    QString tempString,statusString;
+    QString timeString,statusString;
     QTime currTime;
+    QVariant returnedValue;
     int i;
     float xa,ya,za,ta;
     bool buttona;
@@ -36,10 +37,10 @@ void Logger::LoggerProcessMsg(QString data)
         //egyszerű szöveges üzenet -> kitesszük a szöveges logra
         //*@warning: nem lehet vessző a szöveges részben vessző! /
         currTime = QTime::currentTime();
-        tempString = currTime.toString("hh:mm:ss");
-        tempString.append(" : ");
-        tempString.append(splitStr[1]);
-        logList.append(tempString);
+        timeString = currTime.toString("hh:mm:ss:z");
+        timeString.append(":");
+        logList.append(timeString);
+        logList.append(splitStr[1]);
         mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("logModel"),QVariant::fromValue(logList));
 
     }
@@ -101,24 +102,21 @@ void Logger::LoggerProcessMsg(QString data)
 
             if(statusValueChanged == true)
             {
+
                 currentState.updateCurrentLogData(xa,ya,za,ta,buttona);
                 mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
-                QVariant returnedValue;
-                QVariant xv = xa;
-                QVariant yv = ya;
-                QVariant zv = za;
                 qDebug() << "updateDataset QML függvény meghívása...";
                 QMetaObject::invokeMethod(mainWindowFromLogger->discoveryWindowObject, "updateDataset",
                     Q_RETURN_ARG(QVariant, returnedValue),
-                    Q_ARG(QVariant, xv),Q_ARG(QVariant, yv),Q_ARG(QVariant, zv));
+                    Q_ARG(QVariant, xa),Q_ARG(QVariant, ya),Q_ARG(QVariant, za));
 
-// A grafikonrol nem leolvasható korábbi adatok kiírása
+                // A grafikonrol nem leolvasható, korábbi adatok kiírása
                 statusString.sprintf("T: %.3f, Gomb: %d",ta,buttona);
                 currTime = QTime::currentTime();
-                tempString = currTime.toString("hh:mm:ss");
-                tempString.append(" : ");
-                tempString.append(statusString);
-                logList.append(tempString);
+                timeString = currTime.toString("hh:mm:ss:z");
+                timeString.append(":");
+                logList.append(timeString);
+                logList.append(statusString);
                 mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("logModel"),QVariant::fromValue(logList));
 
 
