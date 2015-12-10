@@ -11,26 +11,25 @@ Item {
     objectName: "DiscoveryWindow"
     id:discId
 
-    // signals for the leds
+    // a Ledek signaljai
     signal toggleRed();
     signal toggleOrange();
     signal toggleGreen();
     signal toggleBlue();
 
     property int chartDataNum: 0
-    property int maxChartDataNum: 119
+    property int maxChartDataNum: 75
     property int margin: 10
-    property   var chartOptions: ({})
+    property var chartOptions: ({})
     property double rawdata: 4.0
     property int factor:5
-    //az első oszlop szélessé fix 25
     property int axisTitleWidth: 90
+    //az első oszlop szélessé fix
     property int firstColWidth:160
     property int graphsWidth:((root.width-firstColWidth-axisTitleWidth)/2)
     property int graphsHeight: root.height/3
-    property double factorx: root.width/root.minimumWidth
-    property double factory: root.height/root.minimumHeight
 
+    //Az új x,y,z gyorsulások felrazolása
     function updateDataset(newx,newy,newz)
     {
         chartDataNum++;
@@ -69,6 +68,7 @@ Item {
 
     }
 
+    //A grafikon reszetelése
     function resetGraphs()
     {
         ChartsData.ChartLineDataX.labels.splice(1,ChartsData.ChartLineDataX.labels.length);
@@ -82,6 +82,9 @@ Item {
         ChartsData.ChartLineDataZ.labels.splice(1,ChartsData.ChartLineDataZ.labels.length);
         ChartsData.ChartLineDataZ.datasets[0].data.splice(1,ChartsData.ChartLineDataZ.datasets[0].data.length);
         chart_linez.repaint();
+
+        //a számlálót 0-azni kell ó, hogy újbol felkerüljön maxChartDataNum db minta
+        chartDataNum = 0;
     }
 
 
@@ -200,8 +203,8 @@ Item {
 
                         transform:
                         [
-                            Rotation { origin.x: (175)*factorx/2; origin.y: (275)*factory/2; axis { x: 0; y: 1; z: 0 } angle: (currentState.x.toFixed(0)*9) },
-                            Rotation { origin.x: (175)*factorx/2; origin.y: (275)*factory/2; axis { x: 1; y: 0; z: 0 } angle: (currentState.y.toFixed(0)*9) }
+                            Rotation { origin.x: (175/2); origin.y: (275/2); axis { x: 0; y: 1; z: 0 } angle: (currentState.x.toFixed(0)*9) },
+                            Rotation { origin.x: (175/2); origin.y: (275/2); axis { x: 1; y: 0; z: 0 } angle: (currentState.y.toFixed(0)*9) }
                         ]
                         smooth: true
                     }
@@ -252,8 +255,6 @@ Item {
                 GroupBox
                 {
                     Layout.fillWidth:true
-                    //width: graphsWidth
-                    //height: graphsHeight
                     title:"Z irányú gyorsulás:"
                     Chart
                     {
