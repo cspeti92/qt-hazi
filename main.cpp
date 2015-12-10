@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    //grafikonok beregisztrálása
     engine.addImportPath(QStringLiteral("/jbQuick/Charts/"));
     engine.addImportPath(QStringLiteral("D:/egyetem/qt hazi"));
 

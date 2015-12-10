@@ -36,7 +36,7 @@ void Logger::LoggerProcessMsg(QString data)
     if(splitStr[0] == "t")
     {
         //egyszerű szöveges üzenet -> kitesszük a szöveges logra
-        //*@warning: nem lehet vessző a szöveges részben vessző! /
+        /** @warning: Nem lehet vessző a szöveges üzenetben! */
         currTime = QTime::currentTime();
         timeString = currTime.toString("hh:mm:ss:z");
         timeString.append(":");
@@ -103,7 +103,7 @@ void Logger::LoggerProcessMsg(QString data)
 
             if(statusValueChanged == true)
             {
-
+                //aktuális státusz adatok frissítése és megjelenítése
                 currentState.updateCurrentLogData(xa,ya,za,ta,buttona);
                 mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("currentState"),(QObject*)&currentState);
                 qDebug() << "updateDataset QML függvény meghívása...";
@@ -120,14 +120,9 @@ void Logger::LoggerProcessMsg(QString data)
                 logList.append(statusString);
                 mainWindowFromLogger->qmlCont.setContextProperty(QStringLiteral("logModel"),QVariant::fromValue(logList));
 
-
-
             }
         }
-
-
     }
-
 }
 
 void Logger::resetLogger()

@@ -7,9 +7,6 @@
 #include "SerialCommunication.h"
 #include "Logger.h"
 
-// További információ és példák a C++ - QML kapcsolatról:
-// http://doc.qt.io/qt-5/qtqml-cppintegration-interactqmlfromcpp.html
-
 MainWindowCppSide::MainWindowCppSide(QObject *rootObject,QQmlContext &qmlContext, SerialComm& sCom, Logger& log)
     : QObject(nullptr),qmlCont(qmlContext), mainSerialComm(sCom),mainLogger(log)
 {
@@ -42,10 +39,8 @@ MainWindowCppSide::MainWindowCppSide(QObject *rootObject,QQmlContext &qmlContext
              mainLogger.setMainWindowToLogger(this);
              //összekötjük őket egyből, hogy ne a SerialCommunicationből kelljen
              connect(&mainSerialComm,&SerialComm::serialDataAvailable,&mainLogger,&Logger::LoggerProcessMsg);
-
         }
     }
-
 }
 
 QQuickItem* MainWindowCppSide::findItemByName(const QString& name)
@@ -100,6 +95,7 @@ void MainWindowCppSide::configOpenedHandler()
     }
     else
     {
+        //megnyitották a konfig ablakot -> bekötjük a szignáljait a SerialComm osztály slotjaira
         connect(serialConfigObject,SIGNAL(serialConfigDone()),&mainSerialComm,SLOT(configSavedHandler()));
         connect(serialConfigObject,SIGNAL(stopSimulation()),&mainSerialComm,SLOT(configResetHandler()));
         //beállítjuk a logdata törlésre szolgáló slotot is

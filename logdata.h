@@ -3,11 +3,27 @@
 
 #include <QObject>
 
+/**
+ * @brief Tároló osztály, melynek egy példányát használja mindig a Logger.
+ * A Logger ebből egy, az aktuális állapotot jelző objektummal rendelkezik.
+ * A QML oldallal összeköttetésben áll, az aktuális státuszt jelző résszel.
+ * A grafikonok is az ő információi alapján frissülnek vagy reszetelődnek.
+ */
+
 class LogData : public QObject
 {
     Q_OBJECT
 public:
+    /** Konstruktor
+     * @param x x irányú gyorsulás m/s^2-ben
+     * @param y y irányú gyorsulás m/s^2-ben
+     * @param z z irányú gyorsulás m/s^2-ben
+     * @param temp hőmérséklet °C-ban
+     * @param buttonpressed A nyomógomb állapota
+     */
     LogData(float x,float y, float z,float temp,bool buttonpressed);
+    /** Konstruktor paraméterek nélkül
+     */
     LogData();
     /** Gyorsulás x irányban (m/s2) */
     Q_PROPERTY(float x READ x WRITE setX MEMBER _x NOTIFY xChanged)
@@ -34,10 +50,22 @@ public:
     float temp() const { return _temp; }
     void setTemp(float temp) { _temp= temp; }
 
+    /**
+      Frissíti az aktuális állapotleírást a beadott paraméterek alapján.
+     * @param x
+     * @param y
+     * @param z
+     * @param temp
+     * @param buttonpressed
+     */
     void updateCurrentLogData(float x,float y, float z,float temp,bool buttonpressed);
+    /**
+     * Reszeteli az aktuális állapotleírást. A szimuláció leállításánál használjuk.
+     */
     void resetCurrentLogData();
 
 signals:
+    // Ezeket a szignalokat most nem használjuk */
     void xChanged();
     void yChanged();
     void zChanged();
@@ -46,11 +74,16 @@ signals:
 public slots:
 
 private:
-    float _x;   /** Gyorsulás (m/s2) x irányban*/
-    float _y;   /** Gyorsulás (m/s2) y irányban*/
-    float _z;   /** Gyorsulás (m/s2) z irányban*/
-    float _temp; /** A hőmérséklet C fokban */
-    bool _button; /** A nyomógomb értéke */
+     /** Gyorsulás (m/s2) x irányban*/
+    float _x;
+     /** Gyorsulás (m/s2) y irányban*/
+    float _y;
+    /** Gyorsulás (m/s2) z irányban*/
+    float _z;
+     /** A hőmérséklet C fokban */
+    float _temp;
+    /** A nyomógomb értéke */
+    bool _button;
 
 };
 
